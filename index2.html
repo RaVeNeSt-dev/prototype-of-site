@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT-навигатор — прототип | СтГАУ</title>
+<style>
+  :root{
+    --green-900:#0f2e21;
+    --green-800:#1b4332;
+    --green-700:#2d6a4f;
+    --green-500:#52b788;
+    --green-300:#95d5b2;
+    --green-100:#e7f5ee;
+    --bg:#f4faf7;
+    --text:#14251c;
+    --muted:#5b6f66;
+    --card:#ffffff;
+    --shadow:0 10px 30px rgba(15,46,33,.08);
+    --radius:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Segoe UI",Roboto,system-ui,-apple-system,sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  .container{max-width:1120px;margin:0 auto;padding:0 20px}
+
+  /* ---------- Шапка ---------- */
+  header{
+    position:sticky;top:0;z-index:100;
+    background:rgba(244,250,247,.85);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(27,67,50,.08);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.05rem;letter-spacing:.2px}
+  .logo-mark{
+    width:36px;height:36px;border-radius:11px;
+    background:linear-gradient(135deg,var(--green-700),var(--green-500));
+    display:grid;place-items:center;color:#fff;font-size:1rem;
+  }
+  .logo small{display:block;font-weight:500;font-size:.7rem;color:var(--muted);letter-spacing:.3px}
+  nav ul{display:flex;gap:26px;list-style:none}
+  nav a{font-size:.92rem;color:var(--muted);font-weight:600;transition:color .2s}
+  nav a:hover{color:var(--green-700)}
+  .nav-toggle{display:none;background:none;border:none;font-size:1.6rem;color:var(--green-800);cursor:pointer}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:84px 0 72px;
+    background:
+      radial-gradient(900px 400px at 80% -10%, rgba(82,183,136,.22), transparent 60%),
+      radial-gradient(700px 350px at 0% 0%, rgba(149,213,178,.25), transparent 55%);
+    position:relative;overflow:hidden;
+  }
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--green-100);color:var(--green-700);
+    font-size:.78rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+    padding:7px 14px;border-radius:999px;margin-bottom:22px;
+  }
+  .badge .dot{width:8px;height:8px;border-radius:50%;background:var(--green-500);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+  .hero h1{
+    font-size:clamp(2rem,4.6vw,3.4rem);line-height:1.12;letter-spacing:-1px;
+    font-weight:800;max-width:820px;margin-bottom:20px;
+  }
+  .hero h1 .accent{
+    background:linear-gradient(120deg,var(--green-700),var(--green-500));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p.lead{font-size:1.1rem;color:var(--muted);max-width:640px;margin-bottom:34px}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    padding:14px 26px;border-radius:12px;font-weight:700;font-size:.95rem;
+    border:1.5px solid transparent;cursor:pointer;transition:transform .15s, box-shadow .2s, background .2s;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--green-700);color:#fff;box-shadow:0 8px 20px rgba(45,106,79,.28)}
+  .btn-primary:hover{background:var(--green-800);box-shadow:0 12px 26px rgba(45,106,79,.34)}
+  .btn-ghost{background:#fff;color:var(--green-800);border-color:rgba(27,67,50,.15)}
+  .btn-ghost:hover{border-color:var(--green-500);color:var(--green-700)}
+  .hero-stats{display:flex;gap:38px;flex-wrap:wrap;margin-top:54px}
+  .stat b{display:block;font-size:1.7rem;color:var(--green-700);letter-spacing:-.5px}
+  .stat span{font-size:.85rem;color:var(--muted)}
+
+  /* ---------- Секции ---------- */
+  section.block{padding:78px 0}
+  .section-head{max-width:720px;margin-bottom:44px}
+  .section-head .kicker{
+    color:var(--green-500);font-weight:800;font-size:.8rem;letter-spacing:1.4px;
+    text-transform:uppercase;margin-bottom:10px;
+  }
+  .section-head h2{font-size:clamp(1.6rem,3vw,2.3rem);letter-spacing:-.6px;margin-bottom:12px;font-weight:800}
+  .section-head p{color:var(--muted);font-size:1.02rem}
+
+  /* ---------- Аккордеон тем ---------- */
+  .accordion{display:flex;flex-direction:column;gap:12px}
+  details.topic{
+    background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+    border:1px solid rgba(27,67,50,.06);overflow:hidden;
+    transition:box-shadow .2s;
+  }
+  details.topic[open]{box-shadow:0 14px 34px rgba(15,46,33,.12)}
+  details.topic summary{
+    list-style:none;cursor:pointer;padding:22px 26px;
+    display:flex;align-items:center;gap:16px;font-weight:700;font-size:1.02rem;
+  }
+  details.topic summary::-webkit-details-marker{display:none}
+  .topic-num{
+    flex:0 0 38px;height:38px;border-radius:11px;
+    background:var(--green-100);color:var(--green-700);
+    display:grid;place-items:center;font-size:.95rem;
+  }
+  .chevron{margin-left:auto;transition:transform .25s;color:var(--green-500);font-size:1.1rem}
+  details[open] .chevron{transform:rotate(180deg)}
+  .topic-body{padding:0 26px 24px 80px;color:var(--muted)}
+  .topic-body .analogy{
+    background:var(--green-100);border-left:3px solid var(--green-500);
+    padding:12px 16px;border-radius:8px;margin-top:12px;font-size:.94rem;color:var(--green-800);
+  }
+  .topic-body code{
+    background:#eef4f1;padding:2px 7px;border-radius:6px;font-size:.88rem;color:var(--green-800);
+  }
+
+  /* ---------- Профессии ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px}
+  .job{
+    background:var(--card);border-radius:var(--radius);padding:28px;
+    box-shadow:var(--shadow);border:1px solid rgba(27,67,50,.06);
+    transition:transform .2s, box-shadow .2s;
+    display:flex;flex-direction:column;
+  }
+  .job:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(15,46,33,.13)}
+  .job-emoji{font-size:1.9rem;margin-bottom:14px}
+  .job h3{font-size:1.15rem;margin-bottom:8px;letter-spacing:-.3px}
+  .job p{color:var(--muted);font-size:.93rem;margin-bottom:14px}
+  .job .label{font-size:.75rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--green-500);margin-bottom:6px}
+  .job ul{list-style:none;font-size:.9rem;color:var(--text);margin-bottom:6px}
+  .job ul li{padding-left:20px;position:relative;margin-bottom:4px}
+  .job ul li::before{content:"→";position:absolute;left:0;color:var(--green-500)}
+  .job .start{margin-top:auto;padding-top:14px;font-size:.85rem;color:var(--green-700);font-weight:600;border-top:1px dashed rgba(27,67,50,.12)}
+
+  /* ---------- Квиз ---------- */
+  .quiz-wrap{
+    background:linear-gradient(135deg,var(--green-800),var(--green-700));
+    border-radius:26px;padding:48px;color:#fff;position:relative;overflow:hidden;
+  }
+  .quiz-wrap::before{
+    content:"";position:absolute;width:420px;height:420px;border-radius:50%;
+    background:radial-gradient(circle,rgba(149,213,178,.25),transparent 70%);
+    top:-140px;right:-120px;
+  }
+  .quiz-wrap h2{font-size:clamp(1.5rem,3vw,2rem);margin-bottom:10px;letter-spacing:-.5px;position:relative}
+  .quiz-wrap .sub{color:var(--green-300);margin-bottom:30px;position:relative}
+  .quiz-progress{height:6px;background:rgba(255,255,255,.15);border-radius:99px;margin-bottom:30px;overflow:hidden;position:relative}
+  .quiz-progress span{display:block;height:100%;width:0;background:var(--green-300);border-radius:99px;transition:width .35s ease}
+  .q-step{display:none;position:relative;animation:fadeUp .35s ease}
+  .q-step.active{display:block}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .q-title{font-size:1.15rem;font-weight:700;margin-bottom:18px}
+  .q-options{display:flex;flex-direction:column;gap:10px}
+  .q-opt{
+    text-align:left;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.18);
+    color:#fff;padding:15px 18px;border-radius:12px;cursor:pointer;font-size:.95rem;
+    transition:background .18s, border-color .18s, transform .1s;font-family:inherit;
+  }
+  .q-opt:hover{background:rgba(255,255,255,.14);border-color:var(--green-300)}
+  .q-opt:active{transform:scale(.99)}
+  .quiz-result{display:none;position:relative;animation:fadeUp .4s ease}
+  .quiz-result.show{display:block}
+  .result-card{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:16px;padding:28px}
+  .result-card .big{font-size:2rem;margin-bottom:8px}
+  .result-card h3{font-size:1.4rem;margin-bottom:10px}
+  .result-card p{color:var(--green-300);margin-bottom:16px}
+  .quiz-restart{
+    background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.25);color:#fff;
+    padding:11px 22px;border-radius:11px;cursor:pointer;font-weight:700;font-family:inherit;font-size:.9rem;
+  }
+  .quiz-restart:hover{background:rgba(255,255,255,.22)}
+
+  /* ---------- Форма ---------- */
+  .feedback-card{
+    background:var(--card);border-radius:26px;padding:44px;box-shadow:var(--shadow);
+    border:1px solid rgba(27,67,50,.06);display:grid;grid-template-columns:1fr 1.1fr;gap:40px;
+  }
+  .feedback-card h2{font-size:1.6rem;margin-bottom:12px;letter-spacing:-.4px}
+  .feedback-card .hint{color:var(--muted);font-size:.93rem}
+  form{display:flex;flex-direction:column;gap:14px}
+  label{font-size:.82rem;font-weight:700;color:var(--green-800);margin-bottom:-6px}
+  input,textarea,select{
+    width:100%;padding:13px 15px;border-radius:11px;font-family:inherit;font-size:.95rem;
+    border:1.5px solid rgba(27,67,50,.14);background:#fbfefc;color:var(--text);
+    transition:border-color .2s, box-shadow .2s;
+  }
+  input:focus,textarea:focus,select:focus{
+    outline:none;border-color:var(--green-500);box-shadow:0 0 0 4px rgba(82,183,136,.15);
+  }
+  textarea{resize:vertical;min-height:96px}
+  .form-note{font-size:.8rem;color:var(--muted)}
+  .form-success{
+    display:none;background:var(--green-100);color:var(--green-800);
+    border:1.5px solid var(--green-300);border-radius:11px;padding:14px 16px;
+    font-size:.9rem;font-weight:600;
+  }
+  .form-success.show{display:block;animation:fadeUp .3s ease}
+
+  /* ---------- Подвал ---------- */
+  footer{
+    background:var(--green-900);color:#cfe6da;padding:56px 0 34px;margin-top:20px;
+  }
+  .footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:36px;margin-bottom:34px}
+  footer h4{color:#fff;font-size:1rem;margin-bottom:14px}
+  footer p{font-size:.9rem;color:#a9c9bb;line-height:1.7}
+  footer ul{list-style:none;font-size:.9rem}
+  footer ul li{margin-bottom:9px}
+  footer a:hover{color:var(--green-300)}
+  .footer-bottom{
+    border-top:1px solid rgba(255,255,255,.1);padding-top:22px;
+    display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    font-size:.82rem;color:#8fb3a3;
+  }
+  .tag{
+    display:inline-block;background:rgba(82,183,136,.18);color:var(--green-300);
+    padding:3px 10px;border-radius:99px;font-size:.72rem;font-weight:700;
+    letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px;
+  }
+
+  /* ---------- Анимации появления ---------- */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease, transform .6s ease}
+  .reveal.visible{opacity:1;transform:none}
+
+  /* ---------- Мобильная версия ---------- */
+  @media (max-width:860px){
+    .feedback-card{grid-template-columns:1fr;padding:30px}
+    .footer-grid{grid-template-columns:1fr;gap:26px}
+    .quiz-wrap{padding:30px 22px}
+    .topic-body{padding-left:26px}
+  }
+  @media (max-width:720px){
+    .nav-toggle{display:block}
+    nav ul{
+      display:none;position:absolute;top:68px;left:0;right:0;
+      background:#fff;flex-direction:column;gap:0;padding:8px 0;
+      box-shadow:0 16px 30px rgba(15,46,33,.12);border-bottom:1px solid rgba(27,67,50,.08);
+    }
+    nav ul.open{display:flex}
+    nav ul li a{display:block;padding:14px 22px;font-size:.95rem}
+    .hero{padding:56px 0 50px}
+    .hero-stats{gap:24px}
+    section.block{padding:56px 0}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= ШАПКА ================= -->
+<header>
+  <div class="container nav">
+    <a href="#top" class="logo">
+      <span class="logo-mark">{"</>"}</span>
+      <span>IT-навигатор<small>прототип проекта · СтГАУ</small></span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Меню">☰</button>
+    <nav>
+      <ul id="navList">
+        <li><a href="#about">О проекте</a></li>
+        <li><a href="#info">Информатика</a></li>
+        <li><a href="#jobs">Профессии</a></li>
+        <li><a href="#quiz">Квиз</a></li>
+        <li><a href="#feedback">Обратная связь</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="top">
+  <div class="container">
+    <span class="badge"><span class="dot"></span> Демо-прототип · 2026</span>
+    <h1>Информатика — это понятно.<br><span class="accent">IT-профессии — это рядом.</span></h1>
+    <p class="lead">
+      «IT-навигатор» — учебный прототип сайта-справочника. Здесь простым языком
+      объясняются базовые темы школьной информатики и показывается, как эти знания
+      применяются в реальных профессиях в сфере IT.
+    </p>
+    <div class="hero-actions">
+      <a href="#info" class="btn btn-primary">Разобраться в темах →</a>
+      <a href="#quiz" class="btn btn-ghost">Пройти мини-квиз</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><b>5</b><span>базовых тем</span></div>
+      <div class="stat"><b>6</b><span>IT-профессий</span></div>
+      <div class="stat"><b>≈7 мин</b><span>на изучение</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= О ПРОЕКТЕ ================= -->
+<section class="block" id="about">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="kicker">О проекте</div>
+      <h2>Зачем нужен этот сайт</h2>
+      <p>
+        Многие школьники сталкиваются с тем, что информатика кажется набором
+        непонятных правил, а IT-профессии — чем-то далёким. Прототип объединяет
+        две вещи: <b>простое объяснение школьных тем</b> и <b>понятное описание
+        профессий</b>, чтобы было видно, зачем учить алгоритмы и циклы.
+      </p>
+    </div>
+    <div class="grid">
+      <div class="job reveal">
+        <div class="job-emoji">🧩</div>
+        <h3>Понятно, а не сложно</h3>
+        <p>Каждая тема объясняется бытовыми аналогиями — без формул и «страшных» определений.</p>
+      </div>
+      <div class="job reveal">
+        <div class="job-emoji">🧭</div>
+        <h3>Видно путь</h3>
+        <p>У каждой профессии есть раздел «с чего начать», чтобы сделать первый шаг уже сегодня.</p>
+      </div>
+      <div class="job reveal">
+        <div class="job-emoji">🎓</div>
+        <h3>Учебный прототип</h3>
+        <p>Сайт создан в рамках дисциплины «Обучение служением» и не является коммерческим продуктом.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ИНФОРМАТИКА ================= -->
+<section class="block" id="info">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="kicker">Просто о информатике</div>
+      <h2>5 базовых тем — человеческим языком</h2>
+      <p>Нажмите на тему, чтобы раскрыть объяснение и аналогию из жизни.</p>
+    </div>
+
+    <div class="accordion">
+      <details class="topic reveal" open>
+        <summary>
+          <span class="topic-num">1</span>
+          Что такое алгоритм
+          <span class="chevron">▾</span>
+        </summary>
+        <div class="topic-body">
+          <p><b>Алгоритм</b> — это точная последовательность шагов, которая приводит
+          к нужному результату. В нём нет «примерно» и «как-нибудь»: каждый шаг понятен
+          и выполняется по порядку.</p>
+          <div class="analogy">🍲 <b>Аналогия:</b> рецепт борща — это алгоритм. Если шаги
+          перепутать, получится не суп, а недоразумение. В программировании — так же.</div>
+        </div>
+      </details>
+
+      <details class="topic reveal">
+        <summary>
+          <span class="topic-num">2</span>
+          Переменные: «коробки» для данных
+          <span class="chevron">▾</span>
+        </summary>
+        <div class="topic-body">
+          <p><b>Переменная</b> — это имя, под которым программа хранит значение.
+          Значение можно менять, а имя остаётся. Пример: <code>age = 15</code>,
+          где <code>age</code> — имя, а <code>15</code> — значение.</p>
+          <div class="analogy">📦 <b>Аналогия:</b> переменная — как подписанная коробка.
+          На коробке написано «возраст», внутри лежит число 15. Если человеку исполнилось 16,
+          мы просто кладём в коробку новое число.</div>
+        </div>
+      </details>
+
+      <details class="topic reveal">
+        <summary>
+          <span class="topic-num">3</span>
+          Условия: «если — то»
+          <span class="chevron">▾</span>
+        </summary>
+        <div class="topic-body">
+          <p><b>Условие</b> позволяет программе выбрать действие в зависимости
+          от ситуации. Записывается как <code>если ... то ... иначе ...</code>.</p>
+          <div class="analogy">☂️ <b>Аналогия:</b> «Если на улице дождь — беру зонт,
+          иначе — не беру». Это ровно то же самое, только программа проверяет условие
+          мгновенно и без эмоций.</div>
+        </div>
+      </details>
+
+      <details class="topic reveal">
+        <summary>
+          <span class="topic-num">4</span>
+          Циклы: повторяем без повторов
+          <span class="chevron">▾</span>
+        </summary>
+        <div class="topic-body">
+          <p><b>Цикл</b> — это способ повторить одни и те же действия несколько раз,
+          не переписывая код вручную. Например, вывести числа от 1 до 100 — это
+          одна короткая команда внутри цикла.</p>
+          <div class="analogy">🏋️ <b>Аналогия:</b> «сделай 10 приседаний» — это цикл.
+          Вместо десяти записей «присядь» мы пишем: «повтори 10 раз: присядь».</div>
+        </div>
+      </details>
+
+      <details class="topic reveal">
+        <summary>
+          <span class="topic-num">5</span>
+          Блок-схемы: рисуем логику
+          <span class="chevron">▾</span>
+        </summary>
+        <div class="topic-body">
+          <p><b>Блок-схема</b> — это картинка, на которой видно, как работает алгоритм.
+          Шаги рисуют фигурами, а стрелки показывают порядок действий: овал — начало
+          и конец, прямоугольник — действие, ромб — вопрос/условие.</p>
+          <div class="analogy">🗺️ <b>Аналогия:</b> блок-схема — это маршрут на карте.
+          Видно, откуда выходим, где поворачиваем и куда в итоге придём.</div>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ПРОФЕССИИ ================= -->
+<section class="block" id="jobs">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="kicker">Кем работать в IT</div>
+      <h2>6 профессий, о которых стоит знать</h2>
+      <p>Это не полный список, но именно с этих ролей чаще всего начинают карьеру в IT.</p>
+    </div>
+
+    <div class="grid">
+      <div class="job reveal">
+        <div class="job-emoji">🌐</div>
+        <h3>Веб-разработчик</h3>
+        <p>Создаёт сайты и веб-приложения: от простых страниц до сложных сервисов.</p>
+        <div class="label">Что нужно знать</div>
+        <ul><li>HTML, CSS, JavaScript</li><li>Алгоритмы и логика</li><li>Работа в браузере</li></ul>
+        <div class="start">🚀 Старт: сделать простую страницу-визитку</div>
+      </div>
+
+      <div class="job reveal">
+        <div class="job-emoji">🔍</div>
+        <h3>Тестировщик (QA)</h3>
+        <p>Проверяет программы на ошибки и следит, чтобы всё работало как задумано.</p>
+        <div class="label">Что нужно знать</div>
+        <ul><li>Внимательность и логика</li><li>Как устроены приложения</li><li>Умение описывать баги</li></ul>
+        <div class="start">🚀 Старт: протестировать любимое приложение и найти недочёты</div>
+      </div>
+
+      <div class="job reveal">
+        <div class="job-emoji">📊</div>
+        <h3>Аналитик данных</h3>
+        <p>Ищет закономерности в цифрах и помогает принимать решения на основе данных.</p>
+        <div class="label">Что нужно знать</div>
+        <ul><li>Таблицы и статистика</li><li>SQL и Excel</li><li>Логическое мышление</li></ul>
+        <div class="start">🚀 Старт: разобрать любой открытый набор данных</div>
+      </div>
+
+      <div class="job reveal">
+        <div class="job-emoji">🛡️</div>
+        <h3>Специалист по кибербезопасности</h3>
+        <p>Защищает системы и данные от взломов и утечек.</p>
+        <div class="label">Что нужно знать</div>
+        <ul><li>Как работают сети</li><li>Основы шифрования</li><li>Внимательность</li></ul>
+        <div class="start">🚀 Старт: изучить правила безопасных паролей</div>
+      </div>
+
+      <div class="job reveal">
+        <div class="job-emoji">⚙️</div>
+        <h3>DevOps-инженер</h3>
+        <p>Настраивает автоматическую сборку и запуск программ, следит за стабильностью.</p>
+        <div class="label">Что нужно знать</div>
+        <ul><li>Командная строка</li><li>Основы серверов</li><li>Автоматизация</li></ul>
+        <div class="start">🚀 Старт: установить Linux и попробовать терминал</div>
+      </div>
+
+      <div class="job reveal">
+        <div class="job-emoji">🧠</div>
+        <h3>Продуктовый менеджер</h3>
+        <p>Придумывает, каким должен быть продукт, и координирует команду разработки.</p>
+        <div class="label">Что нужно знать</div>
+        <ul><li>Понимание пользователей</li><li>Планирование</li><li>Коммуникация</li></ul>
+        <div class="start">🚀 Старт: придумать идею приложения и описать её в 5 пунктах</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= КВИЗ ================= -->
+<section class="block" id="quiz">
+  <div class="container">
+    <div class="quiz-wrap reveal">
+      <h2>Какая IT-профессия тебе ближе?</h2>
+      <p class="sub">4 коротких вопроса — и вы получите ориентир для старта.</p>
+
+      <div class="quiz-progress"><span id="quizProgress"></span></div>
+
+      <div id="quizSteps">
+        <div class="q-step active" data-step="0">
+          <div class="q-title">1. Что тебе интереснее делать?</div>
+          <div class="q-options">
+            <button class="q-opt" data-score="web">Создавать что-то видимое — сайты, интерфейсы</button>
+            <button class="q-opt" data-score="qa">Находить ошибки и «недочёты» в готовом</button>
+            <button class="q-opt" data-score="data">Искать закономерности в цифрах и таблицах</button>
+            <button class="q-opt" data-score="cyber">Разгадывать головоломки и защищать данные</button>
+          </div>
+        </div>
+
+        <div class="q-step" data-step="1">
+          <div class="q-title">2. Как ты обычно решаешь сложную задачу?</div>
+          <div class="q-options">
+            <button class="q-opt" data-score="web">Пробую разные варианты и смотрю результат</button>
+            <button class="q-opt" data-score="qa">Разбираю по шагам и ищу, где именно сломалось</button>
+            <button class="q-opt" data-score="data">Собираю факты и ищу закономерность</button>
+            <button class="q-opt" data-score="cyber">Продумываю, как кто-то мог бы обойти правило</button>
+          </div>
+        </div>
+
+        <div class="q-step" data-step="2">
+          <div class="q-title">3. Что тебе ближе в работе?</div>
+          <div class="q-options">
+            <button class="q-opt" data-score="web">Видеть результат своими глазами</button>
+            <button class="q-opt" data-score="qa">Точность и порядок</button>
+            <button class="q-opt" data-score="data">Анализ и выводы</button>
+            <button class="q-opt" data-score="cyber">Ответственность и защита</button>
+          </div>
+        </div>
+
+        <div class="q-step" data-step="3">
+          <div class="q-title">4. Какой школьный предмет даётся легче?</div>
+          <div class="q-options">
+            <button class="q-opt" data-score="web">Информатика (особенно практика)</button>
+            <button class="q-opt" data-score="qa">Математика (аккуратность в расчётах)</button>
+            <button class="q-opt" data-score="data">Математика (логика и анализ)</button>
+            <button class="q-opt" data-score="cyber">Информатика (устройство систем)</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="quiz-result" id="quizResult">
+        <div class="result-card">
+          <div class="big" id="resultEmoji">🎯</div>
+          <h3 id="resultTitle">Твоя профессия</h3>
+          <p id="resultText">Описание результата.</p>
+          <button class="quiz-restart" id="quizRestart">Пройти заново</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ОБРАТНАЯ СВЯЗЬ ================= -->
+<section class="block" id="feedback">
+  <div class="container">
+    <div class="feedback-card reveal">
+      <div>
+        <div class="kicker">Обратная связь</div>
+        <h2>Помогите улучшить прототип</h2>
+        <p class="hint">
+          Это демонстрационная форма: данные никуда не отправляются.
+          В реальной версии ответы помогут понять, какие темы объяснить подробнее,
+          а какие профессии — добавить.
+        </p>
+      </div>
+      <form id="feedbackForm" novalidate>
+        <label for="name">Как вас зовут</label>
+        <input id="name" type="text" placeholder="Имя" required>
+
+        <label for="role">Кто вы</label>
+        <select id="role">
+          <option>Школьник</option>
+          <option>Учитель</option>
+          <option>Студент</option>
+          <option>Другое</option>
+        </select>
+
+        <label for="message">Что понравилось / что улучшить</label>
+        <textarea id="message" placeholder="Ваш отзыв о прототипе…" required></textarea>
+
+        <button type="submit" class="btn btn-primary">Отправить отзыв</button>
+        <div class="form-note">Форма демонстрационная — данные не сохраняются.</div>
+        <div class="form-success" id="formSuccess">✅ Спасибо! В демо-версии отзыв не отправляется, но в реальном проекте он был бы учтён.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ПОДВАЛ ================= -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <span class="tag">Прототип</span>
+        <h4>IT-навигатор</h4>
+        <p>Учебный прототип сайта-справочника по школьной информатике и IT-профессиям.
+        Создан в рамках дисциплины «Обучение служением».</p>
+      </div>
+      <div>
+        <h4>Разделы</h4>
+        <ul>
+          <li><a href="#about">О проекте</a></li>
+          <li><a href="#info">Просто о информатике</a></li>
+          <li><a href="#jobs">Кем работать в IT</a></li>
+          <li><a href="#quiz">Мини-квиз</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>О разработке</h4>
+        <ul>
+          <li>Ставропольский ГАУ</li>
+          <li>Дисциплина: «Обучение служением»</li>
+          <li>2026 год</li>
+          <li>Версия: демо-прототип</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 · Учебный прототип. Не является официальным образовательным ресурсом.</span>
+      <span>Сделано студентом СтГАУ</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ---------- Мобильное меню ---------- */
+  const navToggle = document.getElementById('navToggle');
+  const navList = document.getElementById('navList');
+  navToggle.addEventListener('click', () => navList.classList.toggle('open'));
+  navList.querySelectorAll('a').forEach(a =>
+    a.addEventListener('click', () => navList.classList.remove('open'))
+  );
+
+  /* ---------- Появление блоков при скролле ---------- */
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  /* ---------- Квиз ---------- */
+  const steps = document.querySelectorAll('.q-step');
+  const progress = document.getElementById('quizProgress');
+  const resultBox = document.getElementById('quizResult');
+  const stepsWrap = document.getElementById('quizSteps');
+  const restartBtn = document.getElementById('quizRestart');
+
+  const scores = { web: 0, qa: 0, data: 0, cyber: 0 };
+  let currentStep = 0;
+
+  const results = {
+    web: {
+      emoji: '🌐',
+      title: 'Веб-разработчик',
+      text: 'Тебе нравится видеть результат работы своими глазами. Начни с простой HTML-страницы: сделай визитку о себе, а затем добавь стили и интерактив.'
+    },
+    qa: {
+      emoji: '🔍',
+      title: 'Тестировщик (QA)',
+      text: 'Ты замечаешь детали и любишь порядок. Попробуй протестировать любимое приложение: опиши, что работает не так, как ожидалось, и как это исправить.'
+    },
+    data: {
+      emoji: '📊',
+      title: 'Аналитик данных',
+      text: 'Ты умеешь видеть закономерности. Возьми открытые данные (например, о погоде или спорте) и попробуй сделать по ним простые выводы в таблице.'
+    },
+    cyber: {
+      emoji: '🛡️',
+      title: 'Специалист по кибербезопасности',
+      text: 'Ты любишь разбираться, как всё устроено, и защищать. Начни с правил безопасных паролей и настройки двухфакторной аутентификации для своих аккаунтов.'
+    }
+  };
+
+  function updateProgress() {
+    progress.style.width = `${(currentStep / steps.length) * 100}%`;
+  }
+
+  function showResult() {
+    let winner = 'web';
+    for (const key in scores) {
+      if (scores[key] > scores[winner]) winner = key;
+    }
+    const r = results[winner];
+    document.getElementById('resultEmoji').textContent = r.emoji;
+    document.getElementById('resultTitle').textContent = r.title;
+    document.getElementById('resultText').textContent = r.text;
+
+    stepsWrap.style.display = 'none';
+    resultBox.classList.add('show');
+    progress.style.width = '100%';
+  }
+
+  document.querySelectorAll('.q-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      scores[btn.dataset.score]++;
+      currentStep++;
+      if (currentStep < steps.length) {
+        steps[currentStep].classList.add('active');
+        steps[currentStep - 1].classList.remove('active');
+        updateProgress();
+      } else {
+        showResult();
+      }
+    });
+  });
+
+  restartBtn.addEventListener('click', () => {
+    scores.web = scores.qa = scores.data = scores.cyber = 0;
+    currentStep = 0;
+    steps.forEach((s, i) => s.classList.toggle('active', i === 0));
+    resultBox.classList.remove('show');
+    stepsWrap.style.display = 'block';
+    updateProgress();
+  });
+
+  updateProgress();
+
+  /* ---------- Форма обратной связи ---------- */
+  const form = document.getElementById('feedbackForm');
+  const success = document.getElementById('formSuccess');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const message = document.getElementById('message').value.trim();
+    if (!name || !message) {
+      success.classList.remove('show');
+      alert('Пожалуйста, заполните имя и отзыв.');
+      return;
+    }
+    success.classList.add('show');
+    form.reset();
+    setTimeout(() => success.classList.remove('show'), 5000);
+  });
+</script>
+</body>
+</html>
